@@ -1,6 +1,6 @@
 # Flask API
 
-Flask API demo, from Real Python [tutorials] (https://realpython.com/flask-connexion-rest-api/)
+Flask API demo, from Real Python [tutorials](https://realpython.com/flask-connexion-rest-api/)
 
 ## setup and run
 
