@@ -31,12 +31,10 @@ class Note(db.Model):
 
 
 class PersonSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
     class Meta:
         model = Person
         sqla_session = db.session
+        strict = True
 
     notes = fields.Nested("PersonNoteSchema", default=[], many=True)
 
@@ -46,22 +44,18 @@ class PersonNoteSchema(ma.ModelSchema):
     This class exists to get around a recursion issue
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
     note_id = fields.Int()
     person_id = fields.Int()
     content = fields.Str()
     timestamp = fields.Str()
+    strict = True
 
 
 class NoteSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
     class Meta:
         model = Note
         sqla_session = db.session
+        strict = True
 
     person = fields.Nested("NotePersonSchema", default=None)
 
@@ -71,10 +65,8 @@ class NotePersonSchema(ma.ModelSchema):
     This class exists to get around a recursion issue
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
     person_id = fields.Int()
     lname = fields.Str()
     fname = fields.Str()
     timestamp = fields.Str()
+    strict = True

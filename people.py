@@ -20,7 +20,7 @@ def read_all():
 
     # Serialize the data for the response
     person_schema = PersonSchema(many=True)
-    data = person_schema.dump(people).data
+    data = person_schema.dump(people)
     return data
 
 
@@ -34,9 +34,7 @@ def read_one(person_id):
     """
     # Build the initial query
     person = (
-        Person.query.filter(Person.person_id == person_id)
-        .outerjoin(Note)
-        .one_or_none()
+        Person.query.filter(Person.person_id == person_id).outerjoin(Note).one_or_none()
     )
 
     # Did we find a person?
@@ -44,7 +42,7 @@ def read_one(person_id):
 
         # Serialize the data for the response
         person_schema = PersonSchema()
-        data = person_schema.dump(person).data
+        data = person_schema.dump(person)
         return data
 
     # Otherwise, nope, didn't find that person
@@ -74,14 +72,14 @@ def create(person):
 
         # Create a person instance using the schema and the passed in person
         schema = PersonSchema()
-        new_person = schema.load(person, session=db.session).data
+        new_person = schema.load(person, session=db.session)
 
         # Add the person to the database
         db.session.add(new_person)
         db.session.commit()
 
         # Serialize and return the newly created person in the response
-        data = schema.dump(new_person).data
+        data = schema.dump(new_person)
 
         return data, 201
 
@@ -99,26 +97,17 @@ def update(person_id, person):
     :return:            updated person structure
     """
     # Get the person requested from the db into session
-    update_person = Person.query.filter(
-        Person.person_id == person_id
-    ).one_or_none()
-
+    update_person = Person.query.filter(Person.person_id == person_id).one_or_none()
     # Did we find an existing person?
     if update_person is not None:
-
-        # turn the passed in person into a db object
-        schema = PersonSchema()
-        update = schema.load(person, session=db.session).data
-
-        # Set the id to the person we want to update
-        update.person_id = update_person.person_id
-
-        # merge the new object into the old and commit it to the db
-        db.session.merge(update)
+        update_person.lname = person.get("lname")
+        update_person.fname = person.get("fname")
+        # commit it to the db
         db.session.commit()
 
         # return updated person in the response
-        data = schema.dump(update_person).data
+        schema = PersonSchema()
+        data = schema.dump(update_person)
 
         return data, 200
 
